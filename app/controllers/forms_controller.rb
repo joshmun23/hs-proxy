@@ -9,18 +9,20 @@ class FormsController < ApplicationController
     baseParams    = '?'
     totalParams   = ''
     msg = {}
-    hs_params = {
-      hutk: '',
-      ipAddress: '',
-      pageUrl: 'http://foodspoileralert.com/home-news-carousel-test',
-      pageName: 'Test Page'
-    }
+    hs_params = {}
+
+    if params["hs_context"]['hutk'] && !params["hs_context"]['hutk'].empty?
+      hs_params['pageUrl'] = params['hs_context']['pageUrl']
+      hs_params['pageName'] = params['hs_context']['pageName']
+      hs_params['hutk'] = params['hs_context']['hutk']
+    end
 
     hs_context = JSON.generate(hs_params)
-
+    binding.pry
     if params['email'] && !params['email'].empty?
       msg[:hsStatus] = 200
       totalParams += "email=#{params['email']}"
+
       http = Curl.post("#{url}/#{baseParams + totalParams}", hs_context)
     else
       msg[:hsStatus] = 400
