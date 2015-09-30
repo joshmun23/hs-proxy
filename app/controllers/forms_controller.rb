@@ -4,71 +4,33 @@ class FormsController < ApplicationController
   # GET /forms
   # GET /forms.json
   def index
-    @forms = Form.all
-  end
+    baseUrl       = 'https://forms.hubspot.com/uploads/form/v2'
+    url           = "#{baseUrl}/#{ENV['PORTAL_ID']}/#{ENV['FORM_GUID']}"
+    baseParams    = '?'
+    totalParams   = ''
+    msg = {}
+    hs_params = {
+      hutk: '',
+      ipAddress: '',
+      pageUrl: 'http://foodspoileralert.com/home-news-carousel-test',
+      pageName: 'Test Page'
+    }
 
-  # GET /forms/1
-  # GET /forms/1.json
-  def show
-  end
+    hs_context = JSON.generate(hs_params)
 
-  # GET /forms/new
-  def new
-    @form = Form.new
-  end
-
-  # GET /forms/1/edit
-  def edit
-  end
-
-  # POST /forms
-  # POST /forms.json
-  def create
-    @form = Form.new(form_params)
-
-    respond_to do |format|
-      if @form.save
-        format.html { redirect_to @form, notice: 'Form was successfully created.' }
-        format.json { render :show, status: :created, location: @form }
-      else
-        format.html { render :new }
-        format.json { render json: @form.errors, status: :unprocessable_entity }
-      end
+    if params['email'] && !params['email'].empty?
+      msg[:hsStatus] = 200
+      totalParams += "email=#{params['email']}"
+      binding.pry
+      http = Curl.post("#{url}/#{baseParams + totalParams}", hs_context)
+    else
+      msg[:hsStatus] = 400
+      msg[:errors] = 'E-mail Cannot be Blank'
     end
-  end
 
-  # PATCH/PUT /forms/1
-  # PATCH/PUT /forms/1.json
-  def update
-    respond_to do |format|
-      if @form.update(form_params)
-        format.html { redirect_to @form, notice: 'Form was successfully updated.' }
-        format.json { render :show, status: :ok, location: @form }
-      else
-        format.html { render :edit }
-        format.json { render json: @form.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /forms/1
-  # DELETE /forms/1.json
-  def destroy
-    @form.destroy
-    respond_to do |format|
-      format.html { redirect_to forms_url, notice: 'Form was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    binding.pry
+    render :json => JSON.generate(msg), :callback => params[:callback]
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_form
-      @form = Form.find(params[:id])
-    end
-
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def form_params
-      params[:form]
-    end
 end
