@@ -21,14 +21,12 @@ class FormsController < ApplicationController
     if params['email'] && !params['email'].empty?
       msg[:hsStatus] = 200
       totalParams += "email=#{params['email']}"
-      binding.pry
       http = Curl.post("#{url}/#{baseParams + totalParams}", hs_context)
     else
       msg[:hsStatus] = 400
       msg[:errors] = 'E-mail Cannot be Blank'
     end
 
-    binding.pry
     render :json => JSON.generate(msg), :callback => params[:callback]
   end
 
