@@ -18,7 +18,7 @@ class FormsController < ApplicationController
     end
 
     hs_context = JSON.generate(hs_params)
-    binding.pry
+
     if params['email'] && !params['email'].empty?
       msg[:hsStatus] = 200
       totalParams += "email=#{params['email']}"
