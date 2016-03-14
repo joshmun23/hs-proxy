@@ -21,7 +21,7 @@ class FormsController < ApplicationController
 
     if params['email'] && !params['email'].empty?
       msg[:hsStatus] = 200
-      totalParams += "email=#{params['email']}&newsletter_subscriber=True"
+      totalParams += "email=#{params['email']}&newsletter_subscriber=True&lifecyclestage=lead"
       http = Curl.post("#{url}/#{baseParams + totalParams}", hs_context)
     else
       msg[:hsStatus] = 400
